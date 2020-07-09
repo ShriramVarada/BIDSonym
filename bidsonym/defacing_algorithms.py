@@ -86,14 +86,6 @@ def mridefacer_cmd(image, subject_label, bids_dir):
 
     cmd = ["/mridefacer/mridefacer", "--apply", image]
     check_call(cmd)
-    path = os.path.join(bids_dir, "sourcedata/bidsonym/sub-%s" % subject_label)
-    facemask = os.path.join(bids_dir, "sub-%s" % subject_label,
-                            "anat/sub-%s_T1w_defacemask.nii.gz" % subject_label)
-    if os.path.isdir(path) is True:
-        move(facemask, os.path.join(path))
-    else:
-        os.makedirs(path)
-        move(facemask, os.path.join(path))
     return
 
 

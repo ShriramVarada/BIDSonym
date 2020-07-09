@@ -85,6 +85,7 @@ RUN export PATH="/opt/miniconda-latest/bin:$PATH" \
            'nipype' \
            'nibabel' \
            'pandas' \
+    && conda install -y -q --name bidsonym -c https://conda.anaconda.org/simpleitk SimpleITK \
     && sync && conda clean --all && sync \
     && bash -c "source activate bidsonym \
     &&   pip install --no-cache-dir  \
@@ -183,6 +184,8 @@ RUN echo '{ \
     \n          "deepdefacer", \
     \n          "tensorflow", \
     \n          "scikit-image" \
+    \n          "nibabel" \
+    \n          "SimpleITK" \
     \n        ], \
     \n        "create_env": "bidsonym", \
     \n        "activate": true \
@@ -268,3 +271,4 @@ RUN echo '{ \
     \n    ] \
     \n  ] \
     \n}' > /neurodocker/neurodocker_specs.json
+
