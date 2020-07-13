@@ -44,9 +44,9 @@ BIDSonym
 
 Description
 ===========
-A `BIDS <https://bids-specification.readthedocs.io/en/stable/>`_ `app <https://bids-apps.neuroimaging.io/>`_ for the de-identification of neuroimaging data. ``BIDSonym`` gathers all T1w images from a BIDS dataset and applies one of several popular de-identification algorithms. It currently supports:
+A `BIDS <https://bids-specification.readthedocs.io/en/stable/>`_ `app <https://bids-apps.neuroimaging.io/>`_ for the de-identification of neuroimaging data. ``BIDSonym`` gathers all T1w images from a BIDS dataset and applies one of several popular de-identification algorithms. It also helps deface T2w images by using defaced T1w image as deface-mask. It currently supports:
 
-`MRI deface <https://surfer.nmr.mgh.harvard.edu/fswiki/mri_deface>`_, `Pydeface <https://github.com/poldracklab/pydeface>`_, `Quickshear <https://github.com/nipy/quickshear>`_ and `mridefacer <https://github.com/mih/mridefacer>`_.
+`MRI deface <https://surfer.nmr.mgh.harvard.edu/fswiki/mri_deface>`_, `Pydeface <https://github.com/poldracklab/pydeface>`_, `Quickshear <https://github.com/nipy/quickshear>`_, `mridefacer <https://github.com/mih/mridefacer>`_ and `deepdefacer <https://github.com/josai/DeepDeface>`_.
 
 .. image:: https://raw.githubusercontent.com/PeerHerholz/BIDSonym/master/img/bidsonym_example.png
    :alt: alternate text
@@ -65,61 +65,70 @@ Usage
 
 This App has the following command line arguments:
 
-usage:	run.py [-h]
+usage: bidsonym [-h]
+                [--participant_label PARTICIPANT_LABEL [PARTICIPANT_LABEL ...]]
 
-[--participant_label PARTICIPANT_LABEL [PARTICIPANT_LABEL ...]]
+                [--deid {pydeface,mri_deface,quickshear,mridefacer,deepdefacer}]
 
-[--deid {pydeface,mri_deface,quickshear}]
+                [--deface_t2w DEFACE_T2W] [--del_nodeface {del,no_del}]
 
-[--del_nodeface {del,no_del}]
+                [--check_meta CHECK_META [CHECK_META ...]]
 
-[--deface_t2w]
+                [--del_meta DEL_META [DEL_META ...]]
 
-[--check_meta]
+                [--brainextraction {bet,nobrainer}] [--bet_frac BET_FRAC] [-v]
 
-[--del_meta META_DATA_FIELD [META_DATA_FIELD ...]]
-
-[--brainextraction {bet,nobrainer}]
-
-[--bet_frac BET_FRAC]
-
-bids_dir {participant,group}
+                bids_dir {participant,group}
 
 a BIDS app for de-identification of neuroimaging data
 
 positional arguments:
   bids_dir              The directory with the input dataset formatted
-			according to the BIDS standard.
-  output_dir            The directory where the not de-identified raw files should be stored,
-			in case you decide to keep them.
+                        according to the BIDS standard.
   {participant,group}   Level of the analysis that will be performed. Multiple
-			participant level analyses can be run independently
-			(in parallel) using the same output_dir.
+                        participant level analyses can be run independently
+                        (in parallel) using the same output_dir.
 
 optional arguments:
   --participant_label PARTICIPANT_LABEL [PARTICIPANT_LABEL ...]
-			The label(s) of the participant(s) that should be
-			analyzed. The label corresponds to
-			sub-<participant_label> from the BIDS spec (so it does
-			not include "sub-"). If this parameter is not provided
-			all subjects should be analyzed. Multiple participants
-			can be specified with a space separated list.
-  --deid {pydeface,mri_deface,quickshear}
-			Approach to use for de-identifictation.
+                        The label(s) of the participant(s) that should be
+                        analyzed. The label corresponds to
+                        sub-<participant_label> from the BIDS spec (so it does
+                        not include "sub-"). If this parameter is not provided
+                        all subjects should be analyzed. Multiple participants
+                        can be specified with a space separated list.
+
+  --deid {pydeface,mri_deface,quickshear,mridefacer,deepdefacer}
+                        Approach to use for de-identifictation.
+
+  --deface_t2w DEFACE_T2W
+                        Deface T2w images by using defaced T1w image as
+                        deface-mask.
+
   --del_nodeface {del,no_del}
-			Overwrite and delete original data or copy original
-			data to different folder.
-  --deface_t2w {}
-			Deface T2w images by using defaced T1w image as deface-mask.
-  --del_meta META_DATA_FIELD [META_DATA_FIELD ...]
-			Indicate if and which information from the .json meta-data
-			files should be deleted. If so, the original :code:`.json` files
-			will be copied to :code:`sourcedata/`.
-  --brainextraction {BET, no_brainer}
-			What algorithm should be used for pre-defacing brain extraction
-			(outputs will be used in quality control).
-  --bet_frac [BET_FRAC]
-			In case BET is used for pre-defacing brain extraction, rpovide a Frac value.
+                        Overwrite and delete original data or copy original
+                        data to sourcedata/.
+
+  --check_meta CHECK_META [CHECK_META ...]
+                        Indicate which information from the image and .json
+                        meta-data files should be check for potentially
+                        problematic information. Indicate strings that should
+                        be searched for. The results will be saved to
+                        sourcedata/
+
+  --del_meta DEL_META [DEL_META ...]
+                        Indicate if and which information from the .json meta-
+                        data files should be deleted. If so, the original
+                        .josn files will be copied to sourcedata/
+
+  --brainextraction {bet,nobrainer}
+                        What algorithm should be used for pre-defacing brain
+                        extraction (outputs will be used in quality control).
+
+  --bet_frac BET_FRAC   In case BET is used for pre-defacing brain extraction,
+                        povide a Frac value.
+
+  -v, --version         show program's version number and exit
 
 
 Run it in participant level mode (for one participant):
@@ -127,11 +136,11 @@ Run it in participant level mode (for one participant):
 .. code-block::
 
 	docker run -i --rm \
-		    -v /Users/peer/ds005:/bids_dataset \
-	            peerherholz/bidsonym \
+		    -v /Shared/sinapse/chdi_bids/PREDICTHD_BIDS:/bids_dataset \
+	            sinapselab/bidsonym \
 		    /bids_dataset \
-		    participant --deid pydeface --del_meta 'InstitutionAddress' \
-		    --participant_label 01
+		    participant --deid pydeface --del_nodeface no_del --del_meta 'InstitutionAddress' \
+		    --participant_label 000410
 
 
 Run it in group level mode (for all participants):
@@ -139,8 +148,8 @@ Run it in group level mode (for all participants):
 .. code-block::
 
 	docker run -i --rm \
-		   -v /Users/peer/ds005:/bids_dataset \
-		   peerherholz/bidsonym \
+		   -v /Shared/sinapse/chdi_bids/PREDICTHD_BIDS:/bids_dataset \
+		   sinapselab/bidsonym \
 		   /bids_dataset  group --deid pydeface --del_meta 'InstitutionAddress'
 
 .. usage-marker-end
@@ -151,31 +160,19 @@ Installation
 Following the `BIDS apps standard <https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1005209>`_ it is recommend to install and use BIDSonym in its Docker or Singularity form. \
 To get the BIDSonym Docker image, you need to `install docker <https://docs.docker.com/install/>`_ and within the terminal of your choice type:
 
-:code:`docker pull peerherholz/bidsonym`
+:code:`docker pull sinapselab/bidsonym`
 
 To get its Singularity version, you need to `install singularity <https://singularity.lbl.gov/all-releases>`_ and within the terminal of your choice type:
 
-:code:`singularity pull docker://peerherholz/bidsonym`
+:code:`singularity pull docker://sinapselab/bidsonym`
 
 Documentation
 =============
 BIDSOnym's documentation can be found `here <https://peerherholz.github.io/BIDSonym/>`_.
 
+The SINAPSELAB `manual <https://iowa-my.sharepoint.com/personal/johnsonhj_uiowa_edu/_layouts/OneNote.aspx?id=%2Fpersonal%2Fjohnsonhj_uiowa_edu%2FDocuments%2FSINAPSE_SHARED%2FSINAPSE_LAB_MANUAL&wd=target%28002%20-%20Lab%20Software%20Docs%2F002.4%20-%20End%20User%20Applications%2FBIDSonym.one%7C5D827DE8-4C68-4981-A87C-44AB6407E235%2F%29
+/>`_ provides information on SINAPSELAB's version of BIDSonym.
 
-How to report errors
-====================
-Running into any bugs :beetle:? Check out the `open issues <https://github.com/PeerHerholz/BIDSonym/issues>`_ to see if we're already working on it. If not, open up a new issue and we will check it out when we can!
-
-How to contribute
-=================
-Thank you for considering contributing to our project! Before getting involved, please review our `Code of Conduct <https://github.com/PeerHerholz/BIDSonym/blob/master/CODE_OF_CONDUCT.rst>`_. Next, you can review `open issues <https://github.com/PeerHerholz/BIDSonym/issues>`_ that we are looking for help with. If you submit a new pull request please be as detailed as possible in your comments. Please also have a look at our `contribution guidelines <https://github.com/PeerHerholz/BIDSonym/blob/master/CONTRIBUTING.rst>`_.
-
-Acknowledgements
-================
-Please acknowledge this work by mentioning explicitly the name of this software
-(*BIDSonym*) and the version, along with a link to the `GitHub repository
-<https://github.com/peerherholz/bidsonym>`_ or the Zenodo reference.
-For more details, please see :ref:`citation`.
 
 Support
 =======
