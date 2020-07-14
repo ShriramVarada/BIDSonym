@@ -113,11 +113,13 @@ def deepdefacer_cmd(image, subject_label, bids_dir):
     maskfile = os.path.join(bids_dir,
                             "sourcedata/bidsonym/sub-%s/sub-%s_T1w_space-native_defacemask-deepdefacer"
                             % (subject_label, subject_label))
-
+    defaced_outputimage = image[:-10] + "mod-T1w_defacemask.nii.gz"
+    cmd_docker = ["docker", "exec", "deepdefacer", "deepdefacer", "--input_file", image,
+                  "--defaced_output_path", defaced_outputimage, "--mask_output_path", os.path.dirname(image)]
     cmd = ["deepdefacer", "--input_file", image,
            "--defaced_output_path", image,
            "--mask_output_path", maskfile]
-    check_call(cmd)
+    check_call(cmd_docker)
 
 
 def run_deepdefacer(image, subject_label, bids_dir):

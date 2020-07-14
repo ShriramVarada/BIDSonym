@@ -7,7 +7,7 @@
 # 
 #     https://github.com/kaczmarj/neurodocker
 
-FROM neurodebian:stretch-non-free
+FROM neurotensortest
 
 ARG DEBIAN_FRONTEND="noninteractive"
 
@@ -129,6 +129,7 @@ ENV IS_DOCKER="1"
 WORKDIR /tmp/
 
 ENTRYPOINT ["/neurodocker/startup.sh", "bidsonym"]
+
 
 RUN echo '{ \
     \n  "pkg_manager": "apt", \
