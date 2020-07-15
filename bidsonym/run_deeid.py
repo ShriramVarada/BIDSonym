@@ -107,8 +107,9 @@ def run_deeid():
                     if args.del_meta:
                         del_meta_data(args.bids_dir, subject_label, list_field_del)
                 else:
-                    copy_no_deid(subject_label, args.bids_dir, T1_file)
-                    run_pydeface(T1_file, T1_file)
+                    #copy_no_deid(subject_label, args.bids_dir, T1_file)
+                    T1_file_masked = T1_file[:-10] + "mod-T1w_defacemask.nii.gz"
+                    run_pydeface(T1_file, T1_file_masked)
                     check_meta_data(args.bids_dir, subject_label, list_check_meta)
                     if args.del_meta:
                         del_meta_data(args.bids_dir, subject_label, list_field_del)
@@ -119,8 +120,9 @@ def run_deeid():
                 if args.del_meta:
                     del_meta_data(args.bids_dir, subject_label, list_field_del)
                 else:
-                    copy_no_deid(subject_label, args.bids_dir, T1_file)
-                    run_mri_deface(T1_file, T1_file)
+                    # copy_no_deid(subject_label, args.bids_dir, T1_file)
+                    T1_file_masked = T1_file[:-10] + "mod-T1w_defacemask.nii.gz"
+                    run_mri_deface(T1_file, T1_file_masked)
                     check_meta_data(args.bids_dir, subject_label, list_check_meta)
                     if args.del_meta:
                         del_meta_data(args.bids_dir, subject_label, list_field_del)
@@ -131,8 +133,9 @@ def run_deeid():
                 if args.del_meta:
                     del_meta_data(args.bids_dir, subject_label, list_field_del)
                 else:
-                    copy_no_deid(subject_label, args.bids_dir, T1_file)
-                    run_quickshear(T1_file, T1_file)
+                    #copy_no_deid(subject_label, args.bids_dir, T1_file)
+                    T1_file_masked = T1_file[:-10] + "mod-T1w_defacemask.nii.gz"
+                    run_quickshear(T1_file, T1_file_masked)
                     check_meta_data(args.bids_dir, subject_label, list_check_meta)
                     if args.del_meta:
                         del_meta_data(args.bids_dir, subject_label, list_field_del)
@@ -143,7 +146,8 @@ def run_deeid():
                 if args.del_meta:
                     del_meta_data(args.bids_dir, subject_label, list_field_del)
                 else:
-                    copy_no_deid(subject_label, args.bids_dir, T1_file)
+                    #copy_no_deid(subject_label, args.bids_dir, T1_file)
+
                     run_mridefacer(T1_file, subject_label, args.bids_dir)
                     check_meta_data(args.bids_dir, subject_label, list_check_meta)
                     if args.del_meta:

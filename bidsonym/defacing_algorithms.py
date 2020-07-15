@@ -6,7 +6,6 @@ from nipype.interfaces.fsl import BET, FLIRT
 
 
 def pydeface_cmd(image, outfile):
-
     from subprocess import check_call
 
     cmd = ["pydeface", image,
@@ -18,7 +17,6 @@ def pydeface_cmd(image, outfile):
 
 
 def run_pydeface(image, outfile):
-
     deface_wf = pe.Workflow('deface_wf')
     inputnode = pe.Node(niu.IdentityInterface(['in_file']),
                         name='inputnode')
@@ -33,21 +31,40 @@ def run_pydeface(image, outfile):
 
 
 def mri_deface_cmd(image, outfile):
-
     from subprocess import check_call
+    try:
+        cmd = ["/home/bm/bidsonym/fs_data/mri_deface",
+               image,
+               '/home/bm/bidsonym/fs_data/talairach_mixed_with_skull.gca',
+               '/home/bm/bidsonym/fs_data/face.gca',
+               outfile,
+               ]
+        check_call(cmd)
+    except:
+        import SimpleITK as sitk
+        import numpy as np
+        img = sitk.ReadImage(image)
+        arr = sitk.GetArrayFromImage(img)
+        low = np.percentile(arr, 1)
+        high = np.percentile(arr, 99)
+        clamp = sitk.ClampImageFilter()
+        clamp.SetLowerBound(low)
+        clamp.SetUpperBound(high)
+        img_modified = clamp.Execute(img)
+        sitk.WriteImage(img_modified, image[:-7] + '_modified.nii.gz')
 
-    cmd = ["/home/bm/bidsonym/fs_data/mri_deface",
-           image,
-           '/home/bm/bidsonym/fs_data/talairach_mixed_with_skull.gca',
-           '/home/bm/bidsonym/fs_data/face.gca',
-           outfile,
-           ]
-    check_call(cmd)
+        cmd = ["/home/bm/bidsonym/fs_data/mri_deface",
+               image[:-7] + '_modified.nii.gz',
+               '/home/bm/bidsonym/fs_data/talairach_mixed_with_skull.gca',
+               '/home/bm/bidsonym/fs_data/face.gca',
+               image[:-7] + "_defacemask_arjit.nii.gz",
+               ]
+        check_call(cmd)
+        os.remove(image[:-7] + '_modified.nii.gz')
     return
 
 
 def run_mri_deface(image, outfile):
-
     deface_wf = pe.Workflow('deface_wf')
     inputnode = pe.Node(niu.IdentityInterface(['in_file']),
                         name='inputnode')
@@ -62,7 +79,6 @@ def run_mri_deface(image, outfile):
 
 
 def run_quickshear(image, outfile):
-
     deface_wf = pe.Workflow('deface_wf')
     inputnode = pe.Node(niu.IdentityInterface(['in_file']),
                         name='inputnode')
@@ -72,25 +88,23 @@ def run_quickshear(image, outfile):
         (inputnode, bet, [('in_file', 'in_file')]),
         (inputnode, quickshear, [('in_file', 'in_file')]),
         (bet, quickshear, [('mask_file', 'mask_file')]),
-        ])
+    ])
     inputnode.inputs.in_file = image
     quickshear.inputs.out_file = outfile
     deface_wf.run()
 
 
 def mridefacer_cmd(image, subject_label, bids_dir):
-
     from subprocess import check_call
     import os
     from shutil import move
 
-    cmd = ["/mridefacer/mridefacer", "--apply", image]
+    cmd = ["/mridefacer/mridefacer", "--apply", image, "--outdir", os.path.dirname(image)]
     check_call(cmd)
     return
 
 
 def run_mridefacer(image, subject_label, bids_dir):
-
     deface_wf = pe.Workflow('deface_wf')
     inputnode = pe.Node(niu.IdentityInterface(['in_file']),
                         name='inputnode')
@@ -106,7 +120,6 @@ def run_mridefacer(image, subject_label, bids_dir):
 
 
 def deepdefacer_cmd(image, subject_label, bids_dir):
-
     import os
     from subprocess import check_call
 
@@ -123,7 +136,6 @@ def deepdefacer_cmd(image, subject_label, bids_dir):
 
 
 def run_deepdefacer(image, subject_label, bids_dir):
-
     deface_wf = pe.Workflow('deface_wf')
     inputnode = pe.Node(niu.IdentityInterface(['in_file']),
                         name='inputnode')
@@ -139,7 +151,6 @@ def run_deepdefacer(image, subject_label, bids_dir):
 
 
 def run_t2w_deface(image, t1w_deface_mask, outfile):
-
     from bidsonym.utils import deface_t2w
 
     deface_wf = pe.Workflow('deface_wf')
