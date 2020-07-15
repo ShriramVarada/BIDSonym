@@ -33,6 +33,7 @@ def run_pydeface(image, outfile):
 
 def mri_deface_cmd(image, outfile):
     from subprocess import check_call
+    defaceDone = False
     try:
         cmd = ["/home/bm/bidsonym/fs_data/mri_deface",
                image,
@@ -41,27 +42,43 @@ def mri_deface_cmd(image, outfile):
                outfile,
                ]
         check_call(cmd)
+        defaceDone = True
     except:
-        import SimpleITK as sitk
-        import numpy as np
-        img = sitk.ReadImage(image)
-        arr = sitk.GetArrayFromImage(img)
-        low = np.percentile(arr, 1)
-        high = np.percentile(arr, 99)
-        clamp = sitk.ClampImageFilter()
-        clamp.SetLowerBound(low)
-        clamp.SetUpperBound(high)
-        img_modified = clamp.Execute(img)
-        sitk.WriteImage(img_modified, image[:-7] + '_modified.nii.gz')
+        pass
+    for lowPercentile in [1, 3, 5]:
+        try:
+            if not defaceDone:
+                import SimpleITK as sitk
+                import numpy as np
+                img = sitk.ReadImage(image)
+                arr = sitk.GetArrayFromImage(img)
+                low = np.percentile(arr, lowPercentile)
+                high = np.percentile(arr, 100 - lowPercentile)
+                clamp = sitk.ClampImageFilter()
+                clamp.SetLowerBound(low)
+                clamp.SetUpperBound(high)
+                img_modified = clamp.Execute(img)
+                sitk.WriteImage(img_modified, image[:-7] + '_modified.nii.gz')
 
-        cmd = ["/home/bm/bidsonym/fs_data/mri_deface",
-               image[:-7] + '_modified.nii.gz',
-               '/home/bm/bidsonym/fs_data/talairach_mixed_with_skull.gca',
-               '/home/bm/bidsonym/fs_data/face.gca',
-               image[:-7] + "_defacemask_arjit.nii.gz",
-               ]
-        check_call(cmd)
-        os.remove(image[:-7] + '_modified.nii.gz')
+                cmd = ["/home/bm/bidsonym/fs_data/mri_deface",
+                       image[:-7] + '_modified.nii.gz',
+                       '/home/bm/bidsonym/fs_data/talairach_mixed_with_skull.gca',
+                       '/home/bm/bidsonym/fs_data/face.gca',
+                       image[:-7] + "_defacemask_arjit.nii.gz",
+                       ]
+                check_call(cmd)
+                os.remove(image[:-7] + '_modified.nii.gz')
+                defaceDone = True
+        except Exception:
+            pass
+
+    if not defaceDone:
+        try:
+            file = open('/' + image.split('/')[1] + '/tmp/mri_deface.log', 'a')
+            file.write("Error in defacing: /" + '/'.join(image.split('/')[2:]) + '\n')
+            file.close()
+        except Exception:
+            pass
     return
 
 
