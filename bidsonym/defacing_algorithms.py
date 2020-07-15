@@ -98,10 +98,11 @@ def run_quickshear(image, outfile):
 def mridefacer_cmd(image, subject_label, bids_dir):
     from subprocess import check_call
     import os
-    from shutil import move
-
-    cmd = ["/mridefacer/mridefacer", "--apply", image, "--outdir", os.path.dirname(image)]
+    from shutil import move, copy
+    copy(image, image[:-10] + "mod-T1w.nii.gz")
+    cmd = ["/mridefacer/mridefacer", "--apply", image[:-10] + "mod-T1w.nii.gz", "--outdir", os.path.dirname(image)]
     check_call(cmd)
+    os.remove(image[:-10] + "mod-T1w.nii.gz")
     return
 
 
