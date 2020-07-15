@@ -3,6 +3,7 @@ from nipype import Function
 from nipype.interfaces import utility as niu
 from nipype.interfaces.quickshear import Quickshear
 from nipype.interfaces.fsl import BET, FLIRT
+import os
 
 
 def pydeface_cmd(image, outfile):
