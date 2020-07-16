@@ -144,18 +144,21 @@ def run_mridefacer(image, subject_label, bids_dir, del_image):
     deface_wf.run()
 
 
+
 def deepdefacer_cmd(image, subject_label, bids_dir, del_image):
     import os
     from subprocess import check_call
     maskfile = os.path.join(bids_dir,
                             "sourcedata/bidsonym/sub-%s/sub-%s_T1w_space-native_defacemask-deepdefacer"
                             % (subject_label, subject_label))
+
     if not del_image:
+
         defaced_output_image = image[:-10] + "mod-T1w_defacemask.nii.gz"
     else:
         defaced_output_image = image
     cmd_docker = ["docker", "exec", "deepdefacer", "deepdefacer", "--input_file", image,
-                  "--defaced_output_path", defaced_output_image, "--mask_output_path", os.path.dirname(image)]
+                  "--defaced_output_path", defaced_output_image]
     check_call(cmd_docker)
 
 
@@ -171,7 +174,7 @@ def run_deepdefacer(image, subject_label, bids_dir, del_image):
     inputnode.inputs.in_file = image
     deepdefacer.inputs.subject_label = subject_label
     deepdefacer.inputs.bids_dir = bids_dir
-    deepdefacer.inputs.bids_dir = del_image
+    deepdefacer.inputs.del_image = del_image
     deface_wf.run()
 
 
