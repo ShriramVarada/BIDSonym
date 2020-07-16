@@ -124,7 +124,8 @@ def mridefacer_cmd(image, subject_label, bids_dir, del_image):
     else:
         cmd = ["/mridefacer/mridefacer", "--apply", image, "--outdir", os.path.dirname(image)]
         check_call(cmd)
-
+        os.remove(image)
+        os.rename(image[:-7] + "_defacemask.nii.gz", image)
     return
 
 
