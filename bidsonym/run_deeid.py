@@ -141,13 +141,13 @@ def run_deeid():
                         del_meta_data(args.bids_dir, subject_label, list_field_del)
             if args.deid == "mridefacer":
                 if args.del_nodeface == "del":
-                    run_mridefacer(T1_file, subject_label, args.bids_dir)
+                    run_mridefacer(T1_file, subject_label, args.bids_dir, True)
                     check_meta_data(args.bids_dir, subject_label, list_check_meta)
                 if args.del_meta:
                     del_meta_data(args.bids_dir, subject_label, list_field_del)
                 else:
                     #copy_no_deid(subject_label, args.bids_dir, T1_file)
-                    run_mridefacer(T1_file, subject_label, args.bids_dir)
+                    run_mridefacer(T1_file, subject_label, args.bids_dir, False)
                     check_meta_data(args.bids_dir, subject_label, list_check_meta)
                     if args.del_meta:
                         del_meta_data(args.bids_dir, subject_label, list_field_del)

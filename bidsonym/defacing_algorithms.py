@@ -43,7 +43,7 @@ def mri_deface_cmd(image, outfile):
                ]
         check_call(cmd)
         defaceDone = True
-    except:
+    except Exception:
         pass
     for lowPercentile in [1, 3, 5]:
         try:
@@ -112,22 +112,27 @@ def run_quickshear(image, outfile):
     deface_wf.run()
 
 
-def mridefacer_cmd(image, subject_label, bids_dir):
+def mridefacer_cmd(image, subject_label, bids_dir, del_image):
     from subprocess import check_call
     import os
     from shutil import move, copy
-    copy(image, image[:-10] + "mod-T1w.nii.gz")
-    cmd = ["/mridefacer/mridefacer", "--apply", image[:-10] + "mod-T1w.nii.gz", "--outdir", os.path.dirname(image)]
-    check_call(cmd)
-    os.remove(image[:-10] + "mod-T1w.nii.gz")
+    if not del_image:
+        copy(image, image[:-10] + "mod-T1w.nii.gz")
+        cmd = ["/mridefacer/mridefacer", "--apply", image[:-10] + "mod-T1w.nii.gz", "--outdir", os.path.dirname(image)]
+        check_call(cmd)
+        os.remove(image[:-10] + "mod-T1w.nii.gz")
+    else:
+        cmd = ["/mridefacer/mridefacer", "--apply", image, "--outdir", os.path.dirname(image)]
+        check_call(cmd)
+
     return
 
 
-def run_mridefacer(image, subject_label, bids_dir):
+def run_mridefacer(image, subject_label, bids_dir, del_image):
     deface_wf = pe.Workflow('deface_wf')
     inputnode = pe.Node(niu.IdentityInterface(['in_file']),
                         name='inputnode')
-    mridefacer = pe.Node(Function(input_names=['image', 'subject_label', 'bids_dir'],
+    mridefacer = pe.Node(Function(input_names=['image', 'subject_label', 'bids_dir', 'del_image'],
                                   output_names=['outfile'],
                                   function=mridefacer_cmd),
                          name='mridefacer')
@@ -135,30 +140,30 @@ def run_mridefacer(image, subject_label, bids_dir):
     inputnode.inputs.in_file = image
     mridefacer.inputs.subject_label = subject_label
     mridefacer.inputs.bids_dir = bids_dir
+    mridefacer.inputs.del_image = del_image
     deface_wf.run()
 
 
-def deepdefacer_cmd(image, subject_label, bids_dir):
+def deepdefacer_cmd(image, subject_label, bids_dir, del_image):
     import os
     from subprocess import check_call
-
     maskfile = os.path.join(bids_dir,
                             "sourcedata/bidsonym/sub-%s/sub-%s_T1w_space-native_defacemask-deepdefacer"
                             % (subject_label, subject_label))
-    defaced_outputimage = image[:-10] + "mod-T1w_defacemask.nii.gz"
+    if not del_image:
+        defaced_output_image = image[:-10] + "mod-T1w_defacemask.nii.gz"
+    else:
+        defaced_output_image = image
     cmd_docker = ["docker", "exec", "deepdefacer", "deepdefacer", "--input_file", image,
-                  "--defaced_output_path", defaced_outputimage, "--mask_output_path", os.path.dirname(image)]
-    cmd = ["deepdefacer", "--input_file", image,
-           "--defaced_output_path", image,
-           "--mask_output_path", maskfile]
+                  "--defaced_output_path", defaced_output_image, "--mask_output_path", os.path.dirname(image)]
     check_call(cmd_docker)
 
 
-def run_deepdefacer(image, subject_label, bids_dir):
+def run_deepdefacer(image, subject_label, bids_dir, del_image):
     deface_wf = pe.Workflow('deface_wf')
     inputnode = pe.Node(niu.IdentityInterface(['in_file']),
                         name='inputnode')
-    deepdefacer = pe.Node(Function(input_names=['image', 'subject_label', 'bids_dir'],
+    deepdefacer = pe.Node(Function(input_names=['image', 'subject_label', 'bids_dir', 'del_image'],
                                    output_names=['outfile'],
                                    function=deepdefacer_cmd),
                           name='deepdefacer')
@@ -166,6 +171,7 @@ def run_deepdefacer(image, subject_label, bids_dir):
     inputnode.inputs.in_file = image
     deepdefacer.inputs.subject_label = subject_label
     deepdefacer.inputs.bids_dir = bids_dir
+    deepdefacer.inputs.bids_dir = del_image
     deface_wf.run()
 
 
