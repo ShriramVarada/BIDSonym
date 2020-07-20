@@ -63,6 +63,9 @@ Usage
 
 .. usage-marker
 
+For more information on specific usage, refer to the `SINAPSELAB manual <https://iowa-my.sharepoint.com/personal/johnsonhj_uiowa_edu/_layouts/OneNote.aspx?id=%2Fpersonal%2Fjohnsonhj_uiowa_edu%2FDocuments%2FSINAPSE_SHARED%2FSINAPSE_LAB_MANUAL&wd=target%28002%20-%20Lab%20Software%20Docs%2F002.4%20-%20End%20User%20Applications%2FBIDSonym.one%7C5D827DE8-4C68-4981-A87C-44AB6407E235%2F%29
+/>`_.
+
 This App has the following command line arguments:
 
 usage: bidsonym [-h]
@@ -161,6 +164,10 @@ Following the `BIDS apps standard <https://journals.plos.org/ploscompbiol/articl
 To get the BIDSonym Docker image, you need to `install docker <https://docs.docker.com/install/>`_ and within the terminal of your choice type:
 
 :code:`docker pull sinapselab/bidsonym`
+
+:code:`docker pull sinapselab/deepdefacer`
+
+`deepdefacer` is required as a separate image.
 
 To get its Singularity version, you need to `install singularity <https://singularity.lbl.gov/all-releases>`_ and within the terminal of your choice type:
 
