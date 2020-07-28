@@ -63,7 +63,7 @@ Usage
 
 .. usage-marker
 
-For more information on specific usage, refer to the `SINAPSELAB manual <https://iowa-my.sharepoint.com/personal/johnsonhj_uiowa_edu/_layouts/OneNote.aspx?id=%2Fpersonal%2Fjohnsonhj_uiowa_edu%2FDocuments%2FSINAPSE_SHARED%2FSINAPSE_LAB_MANUAL&wd=target%28002%20-%20Lab%20Software%20Docs%2F002.4%20-%20End%20User%20Applications%2FBIDSonym.one%7C5D827DE8-4C68-4981-A87C-44AB6407E235%2F%29
+For more information on specific usage and commands, refer to the `SINAPSELAB manual <https://iowa-my.sharepoint.com/personal/johnsonhj_uiowa_edu/_layouts/OneNote.aspx?id=%2Fpersonal%2Fjohnsonhj_uiowa_edu%2FDocuments%2FSINAPSE_SHARED%2FSINAPSE_LAB_MANUAL&wd=target%28002%20-%20Lab%20Software%20Docs%2F002.4%20-%20End%20User%20Applications%2FBIDSonym.one%7C5D827DE8-4C68-4981-A87C-44AB6407E235%2F%29
 />`_.
 
 This App has the following command line arguments:

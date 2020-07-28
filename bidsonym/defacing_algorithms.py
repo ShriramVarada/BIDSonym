@@ -186,7 +186,7 @@ def run_t2w_deface(image, t1w_deface_mask, outfile):
     inputnode = pe.Node(niu.IdentityInterface(['in_file']),
                         name='inputnode')
     flirtnode = pe.Node(FLIRT(cost_func='mutualinfo',
-                              output_type="NIFTI_GZ"))
+                              output_type="NIFTI_GZ"), name="flirtnode")
     deface_t2w = pe.Node(Function(input_names=['image', 'warped_mask', 'outfile'],
                                   output_names=['outfile'],
                                   function=deface_t2w),
