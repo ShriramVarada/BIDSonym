@@ -197,5 +197,5 @@ def run_t2w_deface(image, t1w_deface_mask, outfile):
     inputnode.inputs.in_file = image
     flirtnode.inputs.in_file = t1w_deface_mask
     deface_t2w.inputs.infile = image
-    deface_t2w.inputs.outfile = image
+    deface_t2w.inputs.outfile = outfile
     deface_wf.run()
