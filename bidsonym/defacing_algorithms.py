@@ -187,7 +187,7 @@ def run_t2w_deface(image, t1w_deface_mask, outfile):
                         name='inputnode')
     flirtnode = pe.Node(FLIRT(cost_func='mutualinfo',
                               output_type="NIFTI_GZ"), name="flirtnode")
-    deface_t2w = pe.Node(Function(input_names=['image', 'warped_mask', 'outfile'],
+    deface_t2w = pe.Node(Function(input_names=['infile', 'warped_mask', 'outfile'],
                                   output_names=['outfile'],
                                   function=deface_t2w),
                          name='deface_t2w')
@@ -196,5 +196,6 @@ def run_t2w_deface(image, t1w_deface_mask, outfile):
                        (flirtnode, deface_t2w, [('out_file', 'warped_mask')])])
     inputnode.inputs.in_file = image
     flirtnode.inputs.in_file = t1w_deface_mask
-    deface_t2w.inputs.image = image
+    deface_t2w.inputs.infile = image
+    deface_t2w.inputs.outfile = image
     deface_wf.run()
