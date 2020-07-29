@@ -105,8 +105,7 @@ optional arguments:
                         Approach to use for de-identifictation.
 
   --deface_t2w DEFACE_T2W
-                        Deface T2w images by using defaced T1w image as
-                        deface-mask.
+                        Deface T2w images by using algorithm provided by the --deid argument
 
   --del_nodeface {del,no_del}
                         Overwrite and delete original data or copy original
