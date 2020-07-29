@@ -86,11 +86,16 @@ def run_deeid():
 
     list_field_del = args.del_meta
 
+    modality = "T1w"
+
+    if args.deface_t2w:
+        modality = "T2w"
+
     for subject_label in subjects_to_analyze:
         for T1_file in glob(os.path.join(args.bids_dir, "sub-%s" % subject_label,
-                                         "anat", "*_T1w.nii*")) + \
+                                         "anat", "*_"+modality+".nii*")) + \
                                          glob(os.path.join(args.bids_dir, "sub-%s" % subject_label,
-                                                           "ses-*", "anat", "*_T1w.nii*")):
+                                                           "ses-*", "anat", "*_"+modality+".nii*")):
             check_outpath(args.bids_dir, subject_label)
             if args.brainextraction == 'bet':
                 if args.bet_frac is None:
@@ -108,7 +113,7 @@ def run_deeid():
                         del_meta_data(args.bids_dir, subject_label, list_field_del)
                 else:
                     #copy_no_deid(subject_label, args.bids_dir, T1_file)
-                    T1_file_masked = T1_file[:-10] + "mod-T1w_defacemask.nii.gz"
+                    T1_file_masked = T1_file[:-10] + "mod-"+modality+"_defacemask.nii.gz"
                     run_pydeface(T1_file, T1_file_masked)
                     check_meta_data(args.bids_dir, subject_label, list_check_meta)
                     if args.del_meta:
@@ -121,7 +126,7 @@ def run_deeid():
                         del_meta_data(args.bids_dir, subject_label, list_field_del)
                 else:
                     # copy_no_deid(subject_label, args.bids_dir, T1_file)
-                    T1_file_masked = T1_file[:-10] + "mod-T1w_defacemask.nii.gz"
+                    T1_file_masked = T1_file[:-10] + "mod-"+modality+"_defacemask.nii.gz"
                     run_mri_deface(T1_file, T1_file_masked)
                     check_meta_data(args.bids_dir, subject_label, list_check_meta)
                     if args.del_meta:
@@ -134,42 +139,42 @@ def run_deeid():
                         del_meta_data(args.bids_dir, subject_label, list_field_del)
                 else:
                     #copy_no_deid(subject_label, args.bids_dir, T1_file)
-                    T1_file_masked = T1_file[:-10] + "mod-T1w_defacemask.nii.gz"
+                    T1_file_masked = T1_file[:-10] + "mod-"+modality+"_defacemask.nii.gz"
                     run_quickshear(T1_file, T1_file_masked)
                     check_meta_data(args.bids_dir, subject_label, list_check_meta)
                     if args.del_meta:
                         del_meta_data(args.bids_dir, subject_label, list_field_del)
             if args.deid == "mridefacer":
                 if args.del_nodeface == "del":
-                    run_mridefacer(T1_file, subject_label, args.bids_dir, True)
+                    run_mridefacer(T1_file, subject_label, args.bids_dir, True, modality)
                     check_meta_data(args.bids_dir, subject_label, list_check_meta)
                     if args.del_meta:
                         del_meta_data(args.bids_dir, subject_label, list_field_del)
                 else:
                     #copy_no_deid(subject_label, args.bids_dir, T1_file)
-                    run_mridefacer(T1_file, subject_label, args.bids_dir, False)
+                    run_mridefacer(T1_file, subject_label, args.bids_dir, False, modality)
                     check_meta_data(args.bids_dir, subject_label, list_check_meta)
                     if args.del_meta:
                         del_meta_data(args.bids_dir, subject_label, list_field_del)
             if args.deid == "deepdefacer":
                 if args.del_nodeface == "del":
-                    run_deepdefacer(T1_file, subject_label, args.bids_dir, True)
+                    run_deepdefacer(T1_file, subject_label, args.bids_dir, True, modality)
                     check_meta_data(args.bids_dir, subject_label, list_check_meta)
                     if args.del_meta:
                         del_meta_data(args.bids_dir, subject_label, list_field_del)
                 else:
                     #copy_no_deid(subject_label, args.bids_dir, T1_file)
-                    run_deepdefacer(T1_file, subject_label, args.bids_dir, False)
+                    run_deepdefacer(T1_file, subject_label, args.bids_dir, False, modality)
                     check_meta_data(args.bids_dir, subject_label, list_check_meta)
                     print(T1_file)
                     if args.del_meta:
                         del_meta_data(args.bids_dir, subject_label, list_field_del)
-            if args.deface_t2w:
-                for T2_file in glob(os.path.join(args.bids_dir, "sub-%s" % subject_label,
-                                                 "anat", "*_T2w.nii*")) + \
-                                                 glob(os.path.join(args.bids_dir, "sub-%s" % subject_label,
-                                                                   "ses-*", "anat", "*_T2w.nii*")):
-                    run_t2w_deface(T2_file, T1_file, T2_file)
+            # if args.deface_t2w:
+            #     for T2_file in glob(os.path.join(args.bids_dir, "sub-%s" % subject_label,
+            #                                      "anat", "*_T2w.nii*")) + \
+            #                                      glob(os.path.join(args.bids_dir, "sub-%s" % subject_label,
+            #                                                        "ses-*", "anat", "*_T2w.nii*")):
+            #         run_t2w_deface(T2_file, T1_file, T2_file)
 
 
 if __name__ == "__main__":
