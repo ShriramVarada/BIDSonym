@@ -69,9 +69,9 @@ def run_deeid():
         if cgroup.exists() and 'docker' in cgroup.read_text():
             exec_env = 'docker'
 
-    print("Making sure the input data is BIDS compliant "
-          "(warnings can be ignored in most cases).")
-    validate_input_dir(exec_env, args.bids_dir, args.participant_label)
+    # print("Making sure the input data is BIDS compliant "
+    #       "(warnings can be ignored in most cases).")
+    # validate_input_dir(exec_env, args.bids_dir, args.participant_label)
 
     if args.analysis_level == "participant":
         if args.participant_label:
@@ -87,7 +87,7 @@ def run_deeid():
     list_field_del = args.del_meta
 
     modality = "T1w"
-
+    
     if args.deface_t2w:
         modality = "T2w"
 
