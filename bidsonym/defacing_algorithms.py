@@ -118,7 +118,7 @@ def mridefacer_cmd(image, subject_label, bids_dir, del_image, modality):
     from shutil import move, copy
     if not del_image:
         copy(image, image[:-10] + "mod-"+modality+".nii.gz")
-        cmd = ["/mridefacer/mridefacer", "--apply", image[:-10] + "mod-T1w.nii.gz", "--outdir", os.path.dirname(image)]
+        cmd = ["/mridefacer/mridefacer", "--apply", image[:-10] + "mod-"+modality+".nii.gz", "--outdir", os.path.dirname(image)]
         check_call(cmd)
         os.remove(image[:-10] + "mod-"+modality+".nii.gz")
     else:
